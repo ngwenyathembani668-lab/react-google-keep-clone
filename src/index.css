@@ -112,6 +112,18 @@ body.dark-mode .note-reminder {
     color: #f7d6d6;
 }
 
+body.dark-mode .notes-box {
+    background-color: #1F1F1F;
+}
+
+body.dark-mode .searchID {
+    background-color: #1f1f1f;
+}
+
+body.dark-mode span {
+    color: #000;
+}
+
 
 
 /* navigation bar!! */
@@ -294,6 +306,10 @@ nav svg {
     display: flex;
     align-items: center;
     margin-left: 15px;
+}
+
+#main {
+    display: flex;
 }
 
 
@@ -705,6 +721,16 @@ main {
     color: #111827;
 }
 
+.archive-btn {
+    border: none;
+    background-color: #FFf;
+    border-radius: 100%;
+}
+
+.archive-btn:hover {
+    background-color: #E2E6EA;
+}
+
 .upcoming-reminders {
     width: calc(100% - 4%);
     max-width: 1050px;
@@ -784,8 +810,8 @@ main {
     left: 0; 
     /* transform: translate(-50%, -50%); */
      
-    padding: 5% 65.7% 0 34%; 
-    display: none;
+    /* padding: 5% 65.7% 0 34%;  */
+    /* display: none; */
 
     /* visibility: hidden; */
     
@@ -796,7 +822,7 @@ main {
     height: 15rem;
     padding: 8px 10px 15px 10px;
     box-shadow: 0 0 12px rgba(0, 0, 0, 0.3);
-    margin-top: 90px;
+    /* margin-top: 90px; */
     border-radius: 10px;
     background-color: #fff;
     z-index: 100;
@@ -1021,4 +1047,8 @@ main {
         height: 30px;
     }
 
+}
+
+input {
+    outline: none;
 }
