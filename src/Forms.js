@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import Modal from "./Modal";
 
 const NOTES_STORAGE_KEY = "googleKeepNotes";
@@ -58,48 +58,23 @@ function Forms() {
     }
   }, []);
 
-  useEffect(() => {
-    const interval = setInterval(checkReminders, 30000);
-    checkReminders();
-    return () => clearInterval(interval);
-  }, [notes]);
 
-  useEffect(() => {
-    if (!activeFormOpen) {
-      return undefined;
-    }
-
-    const handleBodyClick = (event) => {
-      if (
-        activeFormRef.current?.contains(event.target) ||
-        inactiveFormRef.current?.contains(event.target)
-      ) {
-        return;
-      }
-
-      saveNoteAndClose();
-    };
-
-    document.body.addEventListener("click", handleBodyClick);
-    return () => document.body.removeEventListener("click", handleBodyClick);
-  }, [activeFormOpen, title, text, reminderActive, reminderDateTime]);
-
-  const resetForm = () => {
+  const resetForm = useCallback(() => {
     setTitle("");
     setText("");
     setReminderActive(false);
     setReminderDateTime("");
-  };
+  }, []);
 
-  const addToast = (message) => {
+  const addToast = useCallback((message) => {
     const id = Date.now().toString();
     setToasts((current) => [...current, { id, message }]);
     window.setTimeout(() => {
       setToasts((current) => current.filter((toast) => toast.id !== id));
     }, 4000);
-  };
+  }, []);
 
-  const notifyReminder = (note) => {
+  const notifyReminder = useCallback((note) => {
     const reminderLabel = note.title ? note.title : "Reminder";
     const message = `${reminderLabel} is due now.`;
     addToast(message);
@@ -107,9 +82,9 @@ function Forms() {
     if ("Notification" in window && Notification.permission === "granted") {
       new Notification("Keep Clone Reminder", { body: message });
     }
-  };
+  }, [addToast]);
 
-  const checkReminders = () => {
+  const checkReminders = useCallback(() => {
     const now = new Date();
     let updated = false;
 
@@ -130,18 +105,18 @@ function Forms() {
     if (updated) {
       setNotes(nextNotes);
     }
-  };
+  }, [notes, notifyReminder]);
 
   const openActiveForm = () => {
     setActiveFormOpen(true);
   };
 
-  const closeActiveForm = () => {
+  const closeActiveForm = useCallback(() => {
     setActiveFormOpen(false);
     resetForm();
-  };
+  }, [resetForm]);
 
-  const saveNoteIfNeeded = () => {
+  const saveNoteIfNeeded = useCallback(() => {
     const trimmedTitle = title.trim();
     const trimmedText = text.trim();
 
@@ -161,12 +136,38 @@ function Forms() {
     };
 
     setNotes((current) => [newNote, ...current]);
-  };
+  }, [title, text, reminderActive, reminderDateTime]);
 
-  const saveNoteAndClose = () => {
+  const saveNoteAndClose = useCallback(() => {
     saveNoteIfNeeded();
     closeActiveForm();
-  };
+  }, [saveNoteIfNeeded, closeActiveForm]);
+
+  useEffect(() => {
+    const interval = setInterval(checkReminders, 30000);
+    checkReminders();
+    return () => clearInterval(interval);
+  }, [checkReminders]);
+
+  useEffect(() => {
+    if (!activeFormOpen) {
+      return undefined;
+    }
+
+    const handleBodyClick = (event) => {
+      if (
+        activeFormRef.current?.contains(event.target) ||
+        inactiveFormRef.current?.contains(event.target)
+      ) {
+        return;
+      }
+
+      saveNoteAndClose();
+    };
+
+    document.body.addEventListener("click", handleBodyClick);
+    return () => document.body.removeEventListener("click", handleBodyClick);
+  }, [activeFormOpen, saveNoteAndClose]);
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -495,3 +496,5 @@ function Forms() {
 }
 
 export default Forms;
+
+
